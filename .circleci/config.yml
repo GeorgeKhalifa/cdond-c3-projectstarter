@@ -1,10 +1,11 @@
 version: 2.1
-
+orbs:
+  slack: circleci/slack@4.10.1
 # commands:
 #   destroy-environment:
 #     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
 #     parameters:
-#       # Add parameter here   
+#       # Add parameter here
 #     steps:
 #       - run:
 #           name: Destroy environments
@@ -16,7 +17,7 @@ version: 2.1
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
 #     parameters:
-#       # Add parameter here     
+#       # Add parameter here
 #     steps:
 #       - run:
 #           name: Revert migrations
@@ -24,14 +25,14 @@ version: 2.1
 #           command: |
 #             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
 #             SUCCESS = 1
-#             if(( $SUCCESS==1 )); 
+#             if(( $SUCCESS==1 ));
 #             then
 #             #  cd ~/project/backend
 #             #  npm install
 #             #  Add revert code here. You can find this in the Getting Started section.
 #               exit 1
 #             fi
-            
+
 jobs:
   build-frontend:
     docker:
@@ -95,7 +96,7 @@ jobs:
             cd backend
             npm install
             npm run test
-            
+
   scan-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -111,8 +112,6 @@ jobs:
             npm audit fix --force
             npm audit --audit-level=critical
 
-
-
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -127,6 +126,23 @@ jobs:
             npm install
             npm audit fix --force
             npm audit --audit-level=critical
+      - slack/notify:
+          event: fail
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*This is a text notification*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
 
 #   deploy-infrastructure:
 #     docker:
@@ -140,7 +156,7 @@ jobs:
 #               --template-file .circleci/files/backend.yml \
 #               #--tags project=your-tag \
 #               # --stack-name "your back-end stack name with workflow id" \
-#               # --parameter-overrides ID="your workflow id"  
+#               # --parameter-overrides ID="your workflow id"
 #               exit 1
 #       - run:
 #           name: Ensure front-end infrastructure exist
@@ -149,7 +165,7 @@ jobs:
 #               --template-file .circleci/files/frontend.yml \
 #               #--tags project=your-tag \
 #               # --stack-name "your front-end stack name with workflow id" \
-#               # --parameter-overrides ID="your workflow id"  
+#               # --parameter-overrides ID="your workflow id"
 #               exit 1
 #       - run:
 #           name: Add back-end ip to ansible inventory
@@ -160,7 +176,7 @@ jobs:
 #           root: ~/
 #           paths:
 #             - project/.circleci/ansible/inventory.txt
-#       # Here's where you will add some code to rollback on failure      
+#       # Here's where you will add some code to rollback on failure
 
 #   configure-infrastructure:
 #     docker:
@@ -179,7 +195,7 @@ jobs:
 #           command: |
 #             # Your code here
 #             exit 1
-#       # Here's where you will add some code to rollback on failure      
+#       # Here's where you will add some code to rollback on failure
 
 #   run-migrations:
 #     docker:
@@ -196,7 +212,7 @@ jobs:
 #           command: |
 #             # Your code here
 #             exit 1
-#      # Here's where you will add some code to rollback on failure      
+#      # Here's where you will add some code to rollback on failure
 
 #   deploy-frontend:
 #     docker:
@@ -217,8 +233,8 @@ jobs:
 #           name: Deploy frontend objects
 #           command: |
 #             # your code here
-#       # Here's where you will add some code to rollback on failure      
-                    
+#       # Here's where you will add some code to rollback on failure
+
 #   deploy-backend:
 #     docker:
 #       # Docker image here that supports Ansible
@@ -234,11 +250,11 @@ jobs:
 #           name: Deploy backend
 #           command: |
 #             # your code here
-#       # Here's where you will add some code to rollback on failure  
+#       # Here's where you will add some code to rollback on failure
 
 #   smoke-test:
 #     docker:
-#       # Lightweight Docker image 
+#       # Lightweight Docker image
 #     steps:
 #       # Checkout code from git
 #       - run:
@@ -257,7 +273,7 @@ jobs:
 #           name: Frontend smoke test.
 #           command: |
 #             # your code here
-#       # Here's where you will add some code to rollback on failure  
+#       # Here's where you will add some code to rollback on failure
 
 #   cloudfront-update:
 #     docker:
@@ -272,7 +288,7 @@ jobs:
 #           name: Update cloudfront distribution
 #           command: |
 #             # your code here
-#       # Here's where you will add some code to rollback on failure  
+#       # Here's where you will add some code to rollback on failure
 
 # cleanup:
 #     docker:
@@ -292,7 +308,6 @@ jobs:
 #             then
 #               # your code here
 #             fi
-            
 
 workflows:
   default:
