@@ -127,7 +127,7 @@ jobs:
             npm audit fix --force
             npm audit --audit-level=critical
       - slack/notify:
-          event: always
+          event: fail
           custom: |
             {
               "blocks": [
@@ -136,7 +136,7 @@ jobs:
                   "fields": [
                     {
                       "type": "plain_text",
-                      "text": "*This is a text notification*",
+                      "text": "*This is a fail notification*",
                       "emoji": true
                     }
                   ]
