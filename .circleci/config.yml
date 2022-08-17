@@ -1,6 +1,6 @@
 version: 2.1
-orbs:
-  slack: circleci/slack@4.5.3
+# orbs:
+#   slack: circleci/slack@4.5.3
 
 commands:
   destroy-environment:
@@ -114,10 +114,10 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-      - slack/notify:
-          channel: C02U089BV6J
-          event: pass
-          template: basic_fail_1
+      # - slack/notify:
+      #     channel: C02U089BV6J
+      #     event: pass
+      #     template: basic_fail_1
 
   scan-backend:
     docker:
@@ -471,55 +471,31 @@ workflows:
             branches:
               only: [dev, main]
           requires: [build-backend]
-      - scan-backend:
-          filters:
-            branches:
-              only: [dev, main]
-          requires: [build-backend]
-      - scan-frontend:
-          filters:
-            branches:
-              only: [dev, main]
-          requires: [build-frontend]
-          context:
-            - SLACK_CONTEXT
+      # - scan-backend:
+      #     filters:
+      #       branches:
+      #         only: [dev, main]
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     filters:
+      #       branches:
+      #         only: [dev, main]
+      #     requires: [build-frontend]
+          # context:
+          #   - SLACK_CONTEXT
       - deploy-infrastructure:
-          filters:
-            branches:
-              only: main
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [test-frontend, test-backend]
       - configure-infrastructure:
-          filters:
-            branches:
-              only: main
           requires: [deploy-infrastructure]
       - run-migrations:
-          filters:
-            branches:
-              only: main
           requires: [configure-infrastructure]
       - deploy-frontend:
-          filters:
-            branches:
-              only: main
           requires: [run-migrations]
       - deploy-backend:
-          filters:
-            branches:
-              only: main
           requires: [run-migrations]
       - smoke-test:
-          filters:
-            branches:
-              only: main
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
-          filters:
-            branches:
-              only: main
           requires: [smoke-test]
       - cleanup:
-          filters:
-            branches:
-              only: main
           requires: [cloudfront-update]
